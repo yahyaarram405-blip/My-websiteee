@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP Mechanic - Catena RP</title>
+    <style>
+        * { box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0f1d;
+            --bg-card: #131b2e;
+            --accent-blue: #00d2ff;
+            --accent-orange: #ff7700;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --discord-color: #5865F2;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 1.5rem 2rem;
+            border-bottom: 4px solid var(--accent-blue);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .header-logo:hover { transform: scale(1.05); }
+        .header-title h1 {
+            margin: 0;
+            color: var(--accent-blue);
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .header-title p {
+            color: var(--text-muted);
+            margin: 5px 0 0 0;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background-color: #1b2640;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background-color: var(--accent-blue);
+            color: #0a0f1d;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid #22304d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-orange));
+        }
+        .card h2 {
+            margin-top: 0;
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            border-bottom: 2px solid #22304d;
+            padding-bottom: 10px;
+        }
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .item-list li {
+            background-color: #1b2640;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent-orange);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .item-list li:hover {
+            background-color: #24345c;
+            transform: translateX(5px);
+        }
+        .item-info span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .badge {
+            background-color: #0f172a;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: var(--success);
+            font-size: 0.85rem;
+        }
+        .scrollable-list {
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .scrollable-list::-webkit-scrollbar { width: 6px; }
+        .scrollable-list::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+        .outfit-card { text-align: center; }
+        .outfit-gallery {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        .outfit-img-box {
+            background-color: #0b101d;
+            border: 2px solid var(--accent-blue);
+            border-radius: 10px;
+            padding: 8px;
+            flex: 1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .outfit-img-box img {
+            width: 100%;
+            height: 220px;
+            object-fit: contain;
+            background-color: #000;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .outfit-img-box img:hover { opacity: 0.85; }
+        .outfit-img-box p {
+            font-size: 0.8rem;
+            color: var(--text-main);
+            font-weight: bold;
+            margin: 6px 0 0 0;
+        }
+        .radio-text {
+            margin-top: 12px;
+            color: var(--accent-orange);
+            font-weight: bold;
+            font-size: 0.95rem;
+            background: #0f172a;
+            padding: 6px;
+            border-radius: 6px;
+            display: inline-block;
+            border: 1px dashed var(--accent-orange);
+        }
+        .discord-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--discord-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+        }
+        .discord-btn:hover { opacity: 0.9; transform: scale(1.05); }
+        .action-btn {
+            background-color: var(--accent-blue);
+            color: #0a0f1d;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .action-btn:hover { opacity: 0.85; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 2px solid var(--accent-blue);
+            padding: 2rem;
+            border-radius: 12px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,210,255,0.4);
+        }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #0b101d;
+            border: 1px solid #22304d;
+            color: white;
+            border-radius: 6px;
+        }
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.92);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .image-modal img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.4);
+            object-fit: contain;
+        }
+        .close-btn {
+            background-color: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #070b14;
+            color: var(--text-muted);
+            margin-top: 3rem;
+            border-top: 1px solid #1a2238;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="https://i.ibb.co/cXJRHtyq/Whats-App-Image-2026-10-06-at-01-08-00.jpg" alt="Mechano Logo" class="header-logo" onclick="openImageModal(this.src)">
+            <div class="header-title">
+                <h1>MP Mechanic // Catena RP</h1>
+                <p>Boss : Negan | Owner : Mercury</p>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="switchPage(1, event)">🏠 Dashboard</button>
+            <button class="nav-btn" onclick="switchPage(2, event)">🚗 Véhicules & Problèmes (Owner)</button>
+            <button class="nav-btn" onclick="switchPage(3, event)" style="border-color: var(--accent-orange); color: var(--accent-orange);">💰 Suivi des Rossitas</button>
+            <a href="https://discord.gg/BdxYe2cwB" target="_blank" class="discord-btn">💬 Discord</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- PAGE 1: DASHBOARD -->
+        <div id="page1" class="page-section active">
+            <div class="dashboard-grid">
+
+                <!-- Workshop Hierarchy -->
+                <div class="card">
+                    <h2>👑 Workshop Hierarchy</h2>
+                    <ul class="item-list">
+                        <li>
+                            <div class="item-info">
+                                <strong>Negan</strong>
+                                <span>Boss / Employer</span>
+                            </div>
+                            <span class="badge" style="color: var(--accent-orange);">Chief</span>
+                        </li>
+                        <li>
+                            <div class="item-info">
+                                <strong>Mercury</strong>
+                                <span>Owner </span>
+                            </div>
+                            <span class="badge" style="color: var(--accent-blue);">Senior</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Official Outfit / Glauth -->
+                <div class="card outfit-card">
+                    <h2>👕 Official Outfit / Glauth</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Required uniform & clothing components.</p>
+                    
+                    <div class="outfit-gallery">
+                        <div class="outfit-img-box">
+                            <img src="https://storage.ko-fi.com/cdn/useruploads/post/512625bb-0487-4c35-a603-b34ce04a0fdb_image.png" alt="Character Outfit" onclick="openImageModal(this.src)">
+                            <p>Character View</p>
+                        </div>
+                        <div class="outfit-img-box">
+                            <img src="https://i.ibb.co/7x7J3MDt/clothes.jpg" alt="Clothes IDs Menu" onclick="openImageModal(this.src)">
+                            <p>Clothes IDs Menu</p>
+                        </div>
+                    </div>
+                    <div class="radio-text">* radio = 55.45 *</div>
+                </div>
+
+                <!-- The Workshop Players -->
+                <div class="card">
+                    <h2>🚗 The Workshop Players</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Active mechanic staff members:</p>
+                    <div class="scrollable-list">
+                        <ul class="item-list" id="playersList"></ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PAGE 2: VEHICULES & PROBLEMES (OWNER PANEL) -->
+        <div id="page2" class="page-section">
+            <div class="dashboard-grid">
+
+                <!-- Liste d'attente / Recrutement -->
+                <div class="card">
+                    <h2>📥 Liste d'attente (Recrutement)</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Demandes des joueurs pour rejoindre l'atelier.</p>
+                    <button class="action-btn" onclick="openFormModal('waitlist')">+ Ajouter Demande</button>
+                    <div class="scrollable-list">
+                        <ul class="item-list" id="waitlistContainer">
+                            <li>
+                                <div class="item-info"><strong>John Doe</strong><span>ID: 4521</span></div>
+                                <span class="badge">En attente</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Car Buy / Vente de Voitures -->
+                <div class="card">
+                    <h2>🚗 Car Buy / Vente Voitures</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Gestion des véhicules clients (Achat / Vente).</p>
+                    <button class="action-btn" onclick="openFormModal('carbuy')">+ Ajouter Véhicule</button>
+                    <div class="scrollable-list">
+                        <ul class="item-list" id="carBuyContainer">
+                            <li>
+                                <div class="item-info"><strong>Sultan RS</strong><span>Molaha: Tonic | Plaka: VIP-77</span></div>
+                                <span class="badge" style="color: var(--accent-orange);">À Vendre</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tickets Internes / Problèmes -->
+                <div class="card">
+                    <h2>⚠ Problèmes / Tickets Internes</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Suivi des problèmes entre joueurs (Privé).</p>
+                    <button class="action-btn" onclick="openFormModal('ticket')">+ Ouvrir Ticket</button>
+                    <div class="scrollable-list">
+                        <ul class="item-list" id="ticketContainer">
+                            <li>
+                                <div class="item-info"><strong>Tonic vs Carlos</strong><span>Problème d'atelier</span></div>
+                                <span class="badge" style="color: #ff4d4d;">Ouvert</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PAGE 3: SUIVI DES ROSSITAS (محمي بالمود باس) -->
+        <div id="page3" class="page-section">
+            <div id="passwordGate" style="max-width: 400px; margin: 4rem auto; text-align: center; background: var(--bg-card); padding: 2rem; border-radius: 12px; border: 2px solid var(--accent-orange);">
+                <h3 style="color: var(--accent-orange); margin-top: 0;">🔐 Espace Protégé (Rossitas)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Entrez le mot de passe administrateur pour accéder au suivi des reçus.</p>
+                <input type="password" id="rossitaPassword" placeholder="Mot de passe..." style="width: 100%; padding: 10px; background: #0b101d; border: 1px solid #22304d; color: white; border-radius: 6px; margin: 10px 0;">
+                <button class="action-btn" style="background-color: var(--accent-orange); width: 100%; margin-top: 10px;" onclick="checkRossitaPassword()">Valider</button>
+            </div>
+
+            <div id="rossitaContent" style="display: none;">
+                <div class="dashboard-grid">
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <h2>💰 Enregistrer une Rossita (Reçu Payé)</h2>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Ajoutez la rossita du joueur, le montant et la date précise.</p>
+                        <button class="action-btn" onclick="openRossitaModal()">+ Ajouter Rossita</button>
+                        <div class="scrollable-list" style="margin-top: 15px;">
+                            <ul class="item-list" id="rossitaContainer">
+                                <li>
+                                    <div class="item-info"><strong>Exemple : Tonic</strong><span>Montant: 50,000$ | Date: 12 / Jeudi / 03</span></div>
+                                    <span class="badge">Payé & Validé</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modals (General Form) -->
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <h3 id="formModalTitle">Ajouter</h3>
+            <input type="text" id="inputField1" placeholder="Nom / Titre...">
+            <input type="text" id="inputField2" placeholder="ID / Détails / Plaka...">
+            <button class="action-btn" style="margin-top: 15px; width: 100%;" onclick="submitFormData()">Submit / Envoyer sur Discord</button>
+            <button class="close-btn" onclick="closeModal('formModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Modal Spécial Rossita (بالمبلغ + السيلكسيون ديال النهار والشهور) -->
+    <div id="rossitaModal" class="modal">
+        <div class="modal-content">
+            <h3>💰 Ajouter une Rossita</h3>
+            <input type="text" id="rossitaPlayerName" placeholder="Nom du joueur...">
+            <input type="text" id="rossitaAmount" placeholder="Montant (Ex: 50,000$)...">
+            
+            <label style="display: block; text-align: left; margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Jour du mois :</label>
+            <select id="rossitaDayNum">
+                <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option>
+                <option value="11">11</option><option value="12" selected>12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+                <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option>
+            </select>
+
+            <label style="display: block; text-align: left; margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Jour de la semaine :</label>
+            <select id="rossitaDayWeek">
+                <option value="Lundi">Lundi</option>
+                <option value="Mardi">Mardi</option>
+                <option value="Mercredi">Mercredi</option>
+                <option value="Jeudi" selected>Jeudi</option>
+                <option value="Vendredi">Vendredi</option>
+                <option value="Samedi">Samedi</option>
+                <option value="Dimanche">Dimanche</option>
+            </select>
+
+            <label style="display: block; text-align: left; margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Mois :</label>
+            <select id="rossitaMonth">
+                <option value="01">01 - Janvier</option><option value="02">02 - Février</option><option value="03" selected>03 - Mars</option><option value="04">04 - Avril</option><option value="05">05 - Mai</option><option value="06">06 - Juin</option>
+                <option value="07">07 - Juillet</option><option value="08">08 - Août</option><option value="09">09 - Septembre</option><option value="10">10 - Octobre</option><option value="11">11 - Novembre</option><option value="12">12 - Décembre</option>
+            </select>
+
+            <button class="action-btn" style="margin-top: 15px; width: 100%; background-color: var(--accent-orange);" onclick="submitRossitaData()">Valider & Envoyer Rossita</button>
+            <button class="close-btn" onclick="closeModal('rossitaModal')">Cancel</button>
+        </div>
+    </div>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Player Name</h3>
+            <p id="modalText">Details...</p>
+            <button class="close-btn" onclick="closeModal('playerModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+        <img id="expandedImg" src="" alt="Expanded View">
+        <button class="close-btn" onclick="closeImageModal()">Close</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Catena RP - MP Mechanic. Created for Yahya (Tonic).</p>
+    </footer>
+
+    <script>
+        // الويب هوك الخاص بالمشاكل والكار بايز
+        const DISCORD_WEBHOOK_URL_GENERAL = "https://discord.com/api/webhooks/1557201027332055044/T0D4oOAPzrJa-OH9aa_Rt8pSI5SXlbTPXsCvuNfDqIrlpUTVskydm8dQzIdF3SoJaBxZ";
+        
+        // الويب هوك الثاني الخاص بالروسيطا (حط الرابط دياله هنا)
+        const DISCORD_WEBHOOK_URL_ROSSITA = "https://discord.com/api/webhooks/1557200468990492702/fHo9pBvouX3NhFYecaGAilfpb_HMtUO3mwcTBsZo-zUhB8fuJ8oaM9Hz5wsMmorTQSjz";
+
+        // المود باس الخاص بالقسم
+        const ROSSITA_SECRET_PASSWORD = "1234";
+
+        function checkRossitaPassword() {
+            const enteredPass = document.getElementById('rossitaPassword').value;
+            if(enteredPass === ROSSITA_SECRET_PASSWORD) {
+                document.getElementById('passwordGate').style.display = 'none';
+                document.getElementById('rossitaContent').style.display = 'block';
+            } else {
+                alert('Mot de passe incorrect !');
+            }
+        }
+
+        const allPlayers = [
+            "Tonic", "Carlos", "Tijani", "Smayka", "Fuuska", "Klaus", "Merkado", 
+            "Elijah", "Elmencho", "Nicolas", "Bomboclat", "Luis", 
+            "Badir", "Facada", "Rey Zankshin", "Dakhdoukhi", "Sebastian", 
+            "Enzo", "Recas", "Danial", "Pablo", "Don Falcon", 
+            "Adams", "Trevone", "Zirex", "Don Montare", "Icardo", 
+            "Royno", "Jack Cole"
+        ];
+
+        const playerListEl = document.getElementById('playersList');
+        allPlayers.forEach(name => {
+            playerListEl.innerHTML += `
+                <li onclick="showPlayerDetails('${name}')">
+                    <div class="item-info"><strong>${name}</strong><span>Mechanic Team</span></div>
+                    <span class="badge">Active</span>
+                </li>
+            `;
+        });
+
+        function showPlayerDetails(playerName) {
+            document.getElementById('modalTitle').innerText = "Player : " + playerName;
+            document.getElementById('modalText').innerText = "Active Mechanic in Catena RP Workshop.\nStatus: Ready for duty.";
+            document.getElementById('playerModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function openImageModal(imageSrc) {
+            document.getElementById('expandedImg').src = imageSrc;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        function switchPage(pageNum, event) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('page' + pageNum).classList.add('active');
+            if(event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+
+        let currentFormType = '';
+        function openFormModal(type) {
+            currentFormType = type;
+            if(type === 'waitlist') {
+                document.getElementById('formModalTitle').innerText = "Ajouter Demande (Recrutement)";
+                document.getElementById('inputField1').placeholder = "Nom du player...";
+                document.getElementById('inputField2').placeholder = "ID du player...";
+            } else if(type === 'carbuy') {
+                document.getElementById('formModalTitle').innerText = "Ajouter Véhicule (Car Buy)";
+                document.getElementById('inputField1').placeholder = "Modèle de voiture...";
+                document.getElementById('inputField2').placeholder = "Nom molaha / Plaka...";
+            } else if(type === 'ticket') {
+                document.getElementById('formModalTitle').innerText = "Ouvrir Problème / Ticket";
+                document.getElementById('inputField1').placeholder = "Entre qui et qui...";
+                document.getElementById('inputField2').placeholder = "Description du problème...";
+            }
+            document.getElementById('inputField1').value = '';
+            document.getElementById('inputField2').value = '';
+            document.getElementById('formModal').style.display = 'flex';
+        }
+
+        function openRossitaModal() {
+            document.getElementById('rossitaPlayerName').value = '';
+            document.getElementById('rossitaAmount').value = '';
+            document.getElementById('rossitaModal').style.display = 'flex';
+        }
+
+        function submitFormData() {
+            const val1 = document.getElementById('inputField1').value;
+            const val2 = document.getElementById('inputField2').value;
+            if(!val1 || !val2) return alert('Kml l-khani 3afak!');
+
+            let targetContainerId = '';
+            let badgeText = '';
+            let badgeColor = '';
+            let categoryName = '';
+
+            if(currentFormType === 'waitlist') {
+                targetContainerId = 'waitlistContainer';
+                badgeText = 'En attente';
+                badgeColor = 'var(--success)';
+                categoryName = '📥 Nouvelle Demande de Recrutement';
+            } else if(currentFormType === 'carbuy') {
+                targetContainerId = 'carBuyContainer';
+                badgeText = 'À Vendre';
+                badgeColor = 'var(--accent-orange)';
+                categoryName = '🚗 Car Buy / Véhicule Ajouté';
+            } else if(currentFormType === 'ticket') {
+                targetContainerId = 'ticketContainer';
+                badgeText = 'Ouvert';
+                badgeColor = '#ff4d4d';
+                categoryName = '⚠ Nouveau Problème / Ticket';
+            }
+
+            const container = document.getElementById(targetContainerId);
+            container.innerHTML += `
+                <li>
+                    <div class="item-info"><strong>${val1}</strong><span>${val2}</span></div>
+                    <span class="badge" style="color: ${badgeColor};">${badgeText}</span>
+                </li>
+            `;
+
+            if(DISCORD_WEBHOOK_URL_GENERAL) {
+                const discordMessage = {
+                    content: `🔔 **${categoryName}**\n> **Détails 1:** ${val1}\n> **Détails 2:** ${val2}`
+                };
+                fetch(DISCORD_WEBHOOK_URL_GENERAL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(discordMessage)
+                }).catch(err => console.log('Error sending to discord:', err));
+            }
+
+            closeModal('formModal');
+        }
+
+        function submitRossitaData() {
+            const playerName = document.getElementById('rossitaPlayerName').value;
+            const amount = document.getElementById('rossitaAmount').value;
+            const dayNum = document.getElementById('rossitaDayNum').value;
+            const dayWeek = document.getElementById('rossitaDayWeek').value;
+            const month = document.getElementById('rossitaMonth').value;
+
+            if(!playerName || !amount) return alert('Kml l-ma3lomat (Ism w l-montant) 3afak!');
+
+            const dateFormatted = `${dayNum} / ${dayWeek} / ${month}`;
+
+            // زيدها فلطابلو فالسيت
+            const container = document.getElementById('rossitaContainer');
+            container.innerHTML += `
+                <li>
+                    <div class="item-info"><strong>${playerName}</strong><span>Montant: ${amount} | Date: ${dateFormatted}</span></div>
+                    <span class="badge">Payé & Validé</span>
+                </li>
+            `;
+
+            // صيفط الويب هوك الخاص بالروسيطا للشانل الثانية (بالمبلغ والتاريخ)
+            if(DISCORD_WEBHOOK_URL_ROSSITA) {
+                const discordMessage = {
+                    content: `💰 **Nouvelle Rossita Validée**\n> **Joueur:** ${playerName}\n> **Montant:** ${amount}\n> **Date:** ${dateFormatted}`
+                };
+                fetch(DISCORD_WEBHOOK_URL_ROSSITA, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(discordMessage)
+                }).catch(err => console.log('Error sending rossita to discord:', err));
+            }
+
+            closeModal('rossitaModal');
+        }
+    </script>
+
+</body>
+</html>
